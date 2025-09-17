@@ -86,8 +86,8 @@ class AIProcessor:
 
         except Exception as e:
             logger.error(f"AI去重失败: {e}")
-            # 失败时返回原始数据
-            return items
+            # 按照fail-fast原则，立即抛出异常
+            raise RuntimeError(f"AI去重处理失败，系统无法继续处理: {e}") from e
 
     async def summarize_content(self, items: List[Dict[str, Any]]) -> Dict[str, Any]:
         """对去重后的内容进行总结和分析"""
@@ -110,12 +110,8 @@ class AIProcessor:
 
         except Exception as e:
             logger.error(f"AI总结失败: {e}")
-            return {
-                "summary": "AI处理失败，请查看原始数据",
-                "trends": [],
-                "project_summaries": [],
-                "categories": {"其他": items}
-            }
+            # 按照fail-fast原则，立即抛出异常
+            raise RuntimeError(f"AI内容总结失败，系统无法继续处理: {e}") from e
 
     def _build_dedup_prompt(self, titles_with_indices: List[str]) -> str:
         """构建去重提示词"""
@@ -139,8 +135,9 @@ class AIProcessor:
             indices = [int(x.strip()) for x in indices_str.split(',') if x.strip().isdigit()]
             return indices
         except Exception as e:
-            logger.warning(f"解析去重结果失败: {e}，返回所有索引")
-            return list(range(100))  # 返回足够大的范围
+            logger.error(f"解析去重结果失败: {e}")
+            # 按照fail-fast原则，立即抛出异常
+            raise RuntimeError(f"AI去重结果解析失败，数据格式不符合预期: {e}") from e
 
     def _build_summary_prompt(self, items: List[Dict[str, Any]]) -> str:
         """构建总结提示词"""
@@ -168,10 +165,7 @@ class AIProcessor:
 请严格按照以下格式返回分析结果，必须使用中文：
 
 ## 今日摘要
-[用2-3句话概括今日AI技术的主要动态和趋势]
-
-## 技术趋势
-[列出3-5个主要的技术趋势或热点话题，每个用一句话描述，用数字列表格式]
+[用2-3句话概括今日AI技术的主要动态]
 
 ## 项目摘要
 [为每个项目提供一句话的中文核心价值总结]
@@ -187,28 +181,12 @@ class AIProcessor:
         try:
             sections = result_text.split("##")
             summary = ""
-            trends = []
             project_summaries = []
 
             for section in sections:
                 section = section.strip()
                 if section.startswith("今日摘要"):
                     summary = section.replace("今日摘要", "").strip()
-                elif section.startswith("技术趋势"):
-                    trends_text = section.replace("技术趋势", "").strip()
-                    # 解析数字列表格式的趋势
-                    trends = []
-                    for line in trends_text.split("\n"):
-                        line = line.strip()
-                        if line and (line.startswith(("1.", "2.", "3.", "4.", "5.")) or line.startswith("- ")):
-                            # 清理数字前缀和markdown符号
-                            clean_line = line
-                            for prefix in ["1.", "2.", "3.", "4.", "5.", "- ", "* "]:
-                                if clean_line.startswith(prefix):
-                                    clean_line = clean_line[len(prefix):].strip()
-                                    break
-                            if clean_line:
-                                trends.append(clean_line)
                 elif section.startswith("项目摘要"):
                     project_text = section.replace("项目摘要", "").strip()
                     # 解析项目摘要列表
@@ -219,16 +197,12 @@ class AIProcessor:
 
             return {
                 "summary": summary or "今日AI技术资讯已收集",
-                "trends": trends,
+                "trends": [],  # 不再生成技术趋势
                 "project_summaries": project_summaries,
                 "categories": {"AI技术": project_summaries}
             }
 
         except Exception as e:
-            logger.warning(f"解析总结结果失败: {e}")
-            return {
-                "summary": result_text[:200] + "..." if len(result_text) > 200 else result_text,
-                "trends": [],
-                "project_summaries": [],
-                "categories": {"其他": []}
-            }
+            logger.error(f"解析总结结果失败: {e}")
+            # 按照fail-fast原则，立即抛出异常
+            raise RuntimeError(f"AI总结结果解析失败，数据格式不符合预期: {e}") from e

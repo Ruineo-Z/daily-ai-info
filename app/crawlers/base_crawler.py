@@ -90,8 +90,9 @@ class BaseCrawler(ABC):
             try:
                 response.json()
                 return True
-            except:
-                return False
+            except Exception as e:
+                # 按照fail-fast原则，抛出具体的JSON解析错误
+                raise ValueError(f"响应JSON格式无效，无法解析: {e}") from e
         elif 'html' in content_type:
             return len(response.text) > 0
 

@@ -22,6 +22,10 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
+# GitHub上传配置
+GITHUB_REPO_OWNER = os.getenv("GITHUB_REPO_OWNER")
+GITHUB_REPO_NAME = os.getenv("GITHUB_REPO_NAME")
+
 # 日志配置
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
 LOG_RETENTION_DAYS = int(os.getenv("LOG_RETENTION_DAYS", "2"))
@@ -88,6 +92,9 @@ def validate_config():
 
     if not GITHUB_TOKEN:
         logger.warning("GITHUB_TOKEN 未设置，GitHub API限制较低")
+
+    if not GITHUB_REPO_OWNER or not GITHUB_REPO_NAME:
+        logger.warning("GitHub仓库配置未设置，无法使用自动上传功能")
 
     logger.info(f"配置加载完成: 数据目录={DATA_DIR}, 日志目录={LOGS_DIR}")
     return True

@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="archive-header mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">📅 历史报告归档</h1>
+            <p class="card-meta">所有每日AI技术趋势分析报告的完整归档</p>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <p>共收录 <strong>{{ total_reports }}</strong> 份分析报告，覆盖 <strong>{{ total_projects }}</strong> 个AI项目</p>
+                </div>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <input type="text" id="search" class="search-box" placeholder="搜索日期或内容...">
+                    <select id="yearFilter" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 6px;">
+                        <option value="">所有年份</option>
+                        {% for year in years %}
+                        <option value="{{ year }}">{{ year }}年</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="stats-overview mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📊 统计概览</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-2">
+                <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ total_reports }}</div>
+                    <div>分析报告</div>
+                </div>
+                <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ total_projects }}</div>
+                    <div>AI项目</div>
+                </div>
+                <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ total_trends }}</div>
+                    <div>技术趋势</div>
+                </div>
+                <div style="text-align: center; padding: 1.5rem; background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem;">{{ active_days }}</div>
+                    <div>活跃天数</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if reports_by_year %}
+{% for year, months in reports_by_year.items() %}
+<div class="year-section mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📅 {{ year }}年报告</h2>
+        </div>
+        <div class="card-body">
+            {% for month, reports in months.items() %}
+            <div class="month-group mb-4">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: #2563eb; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+                    {{ year }}年{{ month }}月 ({{ reports|length }} 份报告)
+                </h3>
+                <div class="grid grid-2">
+                    {% for report in reports %}
+                    <div class="searchable" data-year="{{ year }}" style="padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa; transition: all 0.2s;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div style="flex: 1;">
+                                <h4 style="font-weight: 600; margin-bottom: 0.5rem;">
+                                    <a href="{{ report.url }}" style="color: #1e293b; text-decoration: none; display: flex; align-items: center; gap: 0.5rem;">
+                                        📊 {{ report.date }}
+                                    </a>
+                                </h4>
+                                <div style="display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.875rem; color: #64748b; margin-bottom: 0.75rem;">
+                                    <span>🚀 {{ report.projects_count }} 个项目</span>
+                                    {% if report.trends_count %}
+                                    <span>📈 {{ report.trends_count }} 个趋势</span>
+                                    {% endif %}
+                                    {% if report.file_size %}
+                                    <span>📄 {{ report.file_size }}</span>
+                                    {% endif %}
+                                </div>
+                                {% if report.summary %}
+                                <p style="color: #4b5563; font-size: 0.875rem; line-height: 1.5;">
+                                    {{ report.summary[:100] }}{% if report.summary|length > 100 %}...{% endif %}
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if report.top_languages %}
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; flex-wrap: wrap; gap: 0.25rem;">
+                                {% for lang in report.top_languages[:5] %}
+                                <span style="display: inline-block; padding: 0.125rem 0.375rem; background: #e0e7ff; color: #3730a3; border-radius: 3px; font-size: 0.75rem;">{{ lang }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #94a3b8;">
+                            <span>生成时间: {{ report.generation_time }}</span>
+                            <a href="{{ report.url }}" class="btn" style="font-size: 0.875rem; padding: 0.375rem 0.75rem;">查看详情</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+    <div class="card">
+        <div class="card-body" style="text-align: center; padding: 4rem;">
+            <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📭</div>
+            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; color: #64748b;">暂无历史报告</h3>
+            <p style="color: #94a3b8; margin-bottom: 2rem;">系统正在收集数据，请稍后再查看</p>
+            <a href="/" class="btn">返回首页</a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchBox = document.getElementById('search');
+    const yearFilter = document.getElementById('yearFilter');
+    const items = document.querySelectorAll('.searchable');
+
+    function filterItems() {
+        const query = searchBox.value.toLowerCase();
+        const selectedYear = yearFilter.value;
+
+        items.forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const year = item.dataset.year;
+            const matchesSearch = text.includes(query) || query === '';
+            const matchesYear = selectedYear === '' || year === selectedYear;
+
+            if (matchesSearch && matchesYear) {
+                item.style.display = 'block';
+                item.style.opacity = '1';
+            } else {
+                item.style.display = 'none';
+                item.style.opacity = '0.5';
+            }
+        });
+
+        // 更新年份部分的显示状态
+        document.querySelectorAll('.year-section').forEach(section => {
+            const visibleItems = section.querySelectorAll('.searchable[style*="block"]');
+            section.style.display = visibleItems.length > 0 ? 'block' : 'none';
+        });
+    }
+
+    searchBox.addEventListener('input', filterItems);
+    yearFilter.addEventListener('change', filterItems);
+
+    // 为报告卡片添加悬停效果
+    items.forEach(item => {
+        item.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        });
+
+        item.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = 'none';
+        });
+    });
+});
+</script>
+
+<style>
+.searchable {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.month-group {
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 1.5rem;
+}
+
+.month-group:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+@media (max-width: 768px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .archive-header .card-body > div {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .archive-header .card-body > div > div:last-child {
+        margin-top: 1rem;
+    }
+}
+</style>
+{% endblock %}

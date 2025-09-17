@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="card-title">🚀 每日AI技术趋势分析</h1>
+            <p class="card-meta">基于GitHub Trending的AI技术动态深度分析 | 最后更新: {{ last_update }}</p>
+        </div>
+        <div class="card-body">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <p style="margin-bottom: 1rem;">
+                        自动爬取GitHub热门AI项目，通过Gemini AI智能分析，为您提供最新的AI技术趋势洞察。
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <span class="tag">📊 智能去重</span>
+                        <span class="tag">🤖 AI分析</span>
+                        <span class="tag">📈 趋势识别</span>
+                        <span class="tag">⏰ 每日更新</span>
+                    </div>
+                </div>
+                <div>
+                    <input type="text" id="search" class="search-box" placeholder="搜索项目或技术...">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if summary %}
+<div class="summary-section mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📋 今日摘要</h2>
+        </div>
+        <div class="card-body">
+            <p>{{ summary }}</p>
+
+            {% if trends %}
+            <div class="mt-4">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">📈 核心技术趋势</h3>
+                <div class="grid">
+                    {% for trend in trends %}
+                    <div style="padding: 1rem; background: #f1f5f9; border-radius: 6px; border-left: 4px solid #2563eb;">
+                        <p>{{ loop.index }}. {{ trend }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="projects-section">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">🔥 GitHub热门项目 ({{ projects|length }}个)</h2>
+        </div>
+        <div class="card-body">
+            {% if projects %}
+                <div class="grid">
+                    {% for project in projects %}
+                    <div class="searchable" style="padding: 1.5rem; border: 1px solid #e2e8f0; border-radius: 8px; background: #fafafa;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+                            <div style="flex: 1;">
+                                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">
+                                    <a href="{{ project.url }}" target="_blank" style="color: #2563eb; text-decoration: none;">
+                                        {{ project.name }}
+                                    </a>
+                                </h3>
+                                <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: #64748b; margin-bottom: 0.5rem;">
+                                    <span>⭐ {{ project.stars }}</span>
+                                    {% if project.stars_today %}
+                                    <span>📈 今日+{{ project.stars_today }}</span>
+                                    {% endif %}
+                                    <span>💻 {{ project.language }}</span>
+                                    <span>👨‍💻 {{ project.author }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {% if project.ai_summary %}
+                        <div style="padding: 1rem; background: #e0f2fe; border-radius: 6px; margin-bottom: 1rem;">
+                            <p style="font-weight: 600; color: #0369a1; margin-bottom: 0.5rem;">🤖 AI技术洞察:</p>
+                            <p style="color: #0c4a6e;">{{ project.ai_summary }}</p>
+                        </div>
+                        {% endif %}
+
+                        <p style="color: #4b5563; margin-bottom: 1rem;">{{ project.description }}</p>
+
+                        {% if project.readme and project.readme|length > 100 %}
+                        <details style="margin-top: 1rem;">
+                            <summary style="cursor: pointer; color: #2563eb; font-weight: 500;">📖 README预览</summary>
+                            <div style="margin-top: 0.5rem; padding: 1rem; background: #f8fafc; border-radius: 4px; font-size: 0.875rem; line-height: 1.5; border-left: 3px solid #cbd5e1;">
+                                {{ project.readme[:500] }}
+                                {% if project.readme|length > 500 %}...{% endif %}
+                            </div>
+                        </details>
+                        {% endif %}
+
+                        <div style="margin-top: 1rem; font-size: 0.75rem; color: #94a3b8;">
+                            来源: {{ project.source }} | 爬取时间: {{ project.crawled_at }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 3rem; color: #64748b;">
+                    <p>暂无项目数据</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="stats-section mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📊 数据统计</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-2">
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #2563eb;">{{ projects|length }}</div>
+                    <div style="color: #64748b;">分析项目</div>
+                </div>
+                {% if trends %}
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #059669;">{{ trends|length }}</div>
+                    <div style="color: #64748b;">技术趋势</div>
+                </div>
+                {% endif %}
+                {% if language_stats %}
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #dc2626;">{{ language_stats|length }}</div>
+                    <div style="color: #64748b;">编程语言</div>
+                </div>
+                {% endif %}
+                <div style="text-align: center; padding: 1rem;">
+                    <div style="font-size: 2rem; font-weight: 700; color: #7c3aed;">{{ total_stars_today or 0 }}</div>
+                    <div style="color: #64748b;">今日新增Stars</div>
+                </div>
+            </div>
+
+            {% if language_stats %}
+            <div style="margin-top: 2rem;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">💻 编程语言分布</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    {% for lang, count in language_stats %}
+                    <span class="tag">{{ lang }} ({{ count }})</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="recent-reports mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📅 最近报告</h2>
+        </div>
+        <div class="card-body">
+            {% if recent_reports %}
+                <div class="grid">
+                    {% for report in recent_reports %}
+                    <div style="padding: 1rem; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h4 style="font-weight: 600; margin-bottom: 0.25rem;">
+                                    <a href="{{ report.url }}" style="color: #2563eb; text-decoration: none;">
+                                        {{ report.date }}
+                                    </a>
+                                </h4>
+                                <p style="color: #64748b; font-size: 0.875rem;">{{ report.projects_count }} 个项目</p>
+                            </div>
+                            <a href="{{ report.url }}" class="btn btn-outline">查看</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div style="text-align: center; margin-top: 2rem;">
+                    <a href="/archive.html" class="btn">查看所有历史报告</a>
+                </div>
+            {% else %}
+                <p style="color: #64748b; text-align: center;">暂无历史报告</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

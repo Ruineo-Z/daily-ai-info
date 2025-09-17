@@ -38,15 +38,17 @@ class GitHubTrendingWebCrawler(BaseCrawler):
 
             if not response:
                 logger.error("无法访问GitHub Trending页面")
-                return []
+                # 按照fail-fast原则，无法访问页面时应该抛出异常
+                raise ConnectionError("GitHub Trending页面不可访问，网络连接失败")
 
             # 解析HTML
             soup = BeautifulSoup(response.text, 'html.parser')
             trending_repos = self._parse_trending_page(soup)
 
             if not trending_repos:
-                logger.warning("未解析到任何trending项目")
-                return []
+                logger.error("未解析到任何trending项目")
+                # 按照fail-fast原则，解析失败时应该抛出异常
+                raise ValueError("GitHub Trending页面解析失败，未找到任何项目数据")
 
             # 是否需要获取README内容
             if fetch_readme:
@@ -57,7 +59,8 @@ class GitHubTrendingWebCrawler(BaseCrawler):
 
         except Exception as e:
             logger.error(f"GitHub Trending爬取失败: {e}")
-            return []
+            # 按照fail-fast原则，立即抛出异常
+            raise RuntimeError(f"GitHub Trending数据爬取失败，系统无法继续处理: {e}") from e
 
     def _parse_trending_page(self, soup: BeautifulSoup) -> List[Dict[str, Any]]:
         """解析trending页面的HTML"""
@@ -78,7 +81,8 @@ class GitHubTrendingWebCrawler(BaseCrawler):
 
         except Exception as e:
             logger.error(f"解析Trending页面失败: {e}")
-            return []
+            # 按照fail-fast原则，立即抛出异常
+            raise RuntimeError(f"GitHub Trending页面解析失败，数据格式可能已变化: {e}") from e
 
     def _parse_repo_article(self, article) -> Optional[Dict[str, Any]]:
         """解析单个项目的article元素"""
@@ -179,20 +183,23 @@ class GitHubTrendingWebCrawler(BaseCrawler):
             try:
                 num = float(clean_text.replace('k', ''))
                 return str(int(num * 1000))
-            except:
-                pass
+            except Exception as e:
+                # 数字解析失败应该抛出具体错误，而不是静默忽略
+                raise ValueError(f"k单位数字解析失败，输入格式不符合预期: {clean_text}") from e
         elif 'm' in clean_text:
             try:
                 num = float(clean_text.replace('m', ''))
                 return str(int(num * 1000000))
-            except:
-                pass
+            except Exception as e:
+                # 数字解析失败应该抛出具体错误，而不是静默忽略
+                raise ValueError(f"m单位数字解析失败，输入格式不符合预期: {clean_text}") from e
 
         # 尝试直接转换
         try:
             return str(int(float(clean_text)))
-        except:
-            return "0"
+        except Exception as e:
+            # 按照fail-fast原则，数字解析失败应该抛出异常而不是返回默认值
+            raise ValueError(f"最终数字解析失败，输入不是有效数字格式: {clean_text}") from e
 
     async def _fetch_readmes(self, repos: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """并发获取所有项目的README内容，并发数限制为5"""
@@ -274,6 +281,6 @@ class GitHubTrendingWebCrawler(BaseCrawler):
                 return content
 
         except Exception as e:
-            logger.debug(f"获取README失败 {owner}/{repo}: {e}")
-
-        return ""
+            logger.error(f"获取README失败 {owner}/{repo}: {e}")
+            # 按照fail-fast原则，README获取失败应该抛出异常
+            raise RuntimeError(f"GitHub API README获取失败: {owner}/{repo}, 原因: {e}") from e

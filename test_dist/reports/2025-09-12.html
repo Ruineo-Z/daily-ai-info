@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>每日AI技术趋势分析</title>
+    <meta name="description" content="基于GitHub Trending的AI技术动态深度分析，每日更新">
+    <meta name="keywords" content="AI,人工智能,GitHub,技术趋势,每日分析">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav a {
+            color: #64748b;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav a:hover,
+        .nav a.active {
+            color: #2563eb;
+        }
+
+        main {
+            margin: 2rem 0;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-meta {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: #2563eb;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #2563eb;
+            border: 1px solid #2563eb;
+        }
+
+        .btn-outline:hover {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: #e0e7ff;
+            color: #3730a3;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+        }
+
+        .text-muted {
+            color: #64748b;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        footer {
+            background: #1e293b;
+            color: #94a3b8;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav {
+                gap: 1rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">🤖 AI趋势分析</a>
+                <nav class="nav">
+                    <a href="/" class="">首页</a>
+                    <a href="/archive.html" class="">历史归档</a>
+                    <a href="/about.html" class="">关于</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+<div class="report-header mb-4">
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h1 class="card-title">GitHub Trending AI技术分析报告 - 2025-09-12</h1>
+                    <p class="card-meta">生成时间: 2025-09-12 13:23:46 | 分析项目: 5 个</p>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <a href="/" class="btn btn-outline">← 返回首页</a>
+                    <a href="/archive.html" class="btn btn-outline">📅 历史归档</a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <h2 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">📋 今日摘要</h2>
+            <p>今日共分析了5个热门AI项目，涵盖了机器学习、深度学习、自然语言处理等多个领域。这些项目展现了AI技术的最新发展趋势，为开发者提供了丰富的学习资源和实践机会。</p>
+        </div>
+    </div>
+</div>
+
+<div class="trends-section mb-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📈 核心技术趋势</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid">
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">1</div>
+                    <p>大模型技术在2025-09-12继续快速发展</p>
+                </div>
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">2</div>
+                    <p>开源AI工具生态日趋完善</p>
+                </div>
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">3</div>
+                    <p>多模态AI应用场景不断扩展</p>
+                </div>
+                <div style="padding: 1.5rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 8px;">
+                    <div style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem;">4</div>
+                    <p>AI安全和可解释性受到更多关注</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="projects-section">
+    <div class="card">
+        <div class="card-header">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <h2 class="card-title">🚀 GitHub热门项目深度解析 (5个)</h2>
+                <input type="text" id="search" class="search-box" placeholder="搜索项目或技术...">
+            </div>
+        </div>
+        <div class="card-body">
+                <div class="searchable" style="padding: 2rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b;">
+                                1.
+                                <a href="https://github.com/user0/awesome-ai-project-5-0" target="_blank" style="color: #2563eb; text-decoration: none;">
+                                    awesome-ai-project-5-0
+                                </a>
+                            </h3>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.25rem; color: #f59e0b;">
+                                    <span>⭐</span>
+                                    <span style="font-weight: 600;">1000</span>
+                                    <span style="color: #059669;">(+10)</span>
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>💻</span> Python
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>👨‍💻</span> developer0
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>📅</span> 2025-09-12 13:23:46
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1.5rem; background: linear-gradient(135deg, #e0f2fe 0%, #e1f5fe 100%); border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0284c7;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <span style="font-size: 1.25rem;">🤖</span>
+                            <span style="font-weight: 700; color: #0c4a6e;">AI技术洞察</span>
+                        </div>
+                        <p style="color: #0c4a6e; line-height: 1.7; font-size: 1rem;">这是一个专注于Python的AI项目，提供了创新的机器学习解决方案，特别适合初学者使用。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📝 项目简介</h4>
+                        <p style="color: #4b5563; line-height: 1.6;">这是第5天的第0个AI项目，专注于机器学习和深度学习技术创新。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📖 README内容</h4>
+                        <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid #cbd5e1;">
+                            <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6; color: #374151; margin: 0;"># AI项目5-0
+
+这是一个创新的AI项目，使用最新的机器学习技术。
+
+## 特性
+
+- 🤖 智能算法
+- 📊 数据分析
+- 🚀 高性能
+- 📱 用户友好
+
+## 快速开始
+
+```bash
+pip install awesome-ai-project-5-0
+```
+
+这个项目旨在解决现实世界的AI问题，提供简单易用的API接口。</pre>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.875rem; color: #94a3b8;">
+                            <span>📊 数据来源: GitHub Trending Web</span>
+                            <span> | 🌐 平台: GitHub</span>
+                        </div>
+                        <a href="https://github.com/user0/awesome-ai-project-5-0" target="_blank" class="btn">查看项目 →</a>
+                    </div>
+                </div>
+                <div class="searchable" style="padding: 2rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b;">
+                                2.
+                                <a href="https://github.com/user1/awesome-ai-project-5-1" target="_blank" style="color: #2563eb; text-decoration: none;">
+                                    awesome-ai-project-5-1
+                                </a>
+                            </h3>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.25rem; color: #f59e0b;">
+                                    <span>⭐</span>
+                                    <span style="font-weight: 600;">1100</span>
+                                    <span style="color: #059669;">(+12)</span>
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>💻</span> JavaScript
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>👨‍💻</span> developer1
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>📅</span> 2025-09-12 13:23:46
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1.5rem; background: linear-gradient(135deg, #e0f2fe 0%, #e1f5fe 100%); border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0284c7;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <span style="font-size: 1.25rem;">🤖</span>
+                            <span style="font-weight: 700; color: #0c4a6e;">AI技术洞察</span>
+                        </div>
+                        <p style="color: #0c4a6e; line-height: 1.7; font-size: 1rem;">这是一个专注于JavaScript的AI项目，提供了创新的机器学习解决方案，特别适合进阶用户使用。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📝 项目简介</h4>
+                        <p style="color: #4b5563; line-height: 1.6;">这是第5天的第1个AI项目，专注于机器学习和深度学习技术创新。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📖 README内容</h4>
+                        <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid #cbd5e1;">
+                            <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6; color: #374151; margin: 0;"># AI项目5-1
+
+这是一个创新的AI项目，使用最新的机器学习技术。
+
+## 特性
+
+- 🤖 智能算法
+- 📊 数据分析
+- 🚀 高性能
+- 📱 用户友好
+
+## 快速开始
+
+```bash
+pip install awesome-ai-project-5-1
+```
+
+这个项目旨在解决现实世界的AI问题，提供简单易用的API接口。</pre>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.875rem; color: #94a3b8;">
+                            <span>📊 数据来源: GitHub Trending Web</span>
+                            <span> | 🌐 平台: GitHub</span>
+                        </div>
+                        <a href="https://github.com/user1/awesome-ai-project-5-1" target="_blank" class="btn">查看项目 →</a>
+                    </div>
+                </div>
+                <div class="searchable" style="padding: 2rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b;">
+                                3.
+                                <a href="https://github.com/user2/awesome-ai-project-5-2" target="_blank" style="color: #2563eb; text-decoration: none;">
+                                    awesome-ai-project-5-2
+                                </a>
+                            </h3>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.25rem; color: #f59e0b;">
+                                    <span>⭐</span>
+                                    <span style="font-weight: 600;">1200</span>
+                                    <span style="color: #059669;">(+14)</span>
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>💻</span> TypeScript
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>👨‍💻</span> developer2
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>📅</span> 2025-09-12 13:23:46
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1.5rem; background: linear-gradient(135deg, #e0f2fe 0%, #e1f5fe 100%); border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0284c7;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <span style="font-size: 1.25rem;">🤖</span>
+                            <span style="font-weight: 700; color: #0c4a6e;">AI技术洞察</span>
+                        </div>
+                        <p style="color: #0c4a6e; line-height: 1.7; font-size: 1rem;">这是一个专注于TypeScript的AI项目，提供了创新的机器学习解决方案，特别适合企业级应用使用。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📝 项目简介</h4>
+                        <p style="color: #4b5563; line-height: 1.6;">这是第5天的第2个AI项目，专注于机器学习和深度学习技术创新。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📖 README内容</h4>
+                        <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid #cbd5e1;">
+                            <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6; color: #374151; margin: 0;"># AI项目5-2
+
+这是一个创新的AI项目，使用最新的机器学习技术。
+
+## 特性
+
+- 🤖 智能算法
+- 📊 数据分析
+- 🚀 高性能
+- 📱 用户友好
+
+## 快速开始
+
+```bash
+pip install awesome-ai-project-5-2
+```
+
+这个项目旨在解决现实世界的AI问题，提供简单易用的API接口。</pre>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.875rem; color: #94a3b8;">
+                            <span>📊 数据来源: GitHub Trending Web</span>
+                            <span> | 🌐 平台: GitHub</span>
+                        </div>
+                        <a href="https://github.com/user2/awesome-ai-project-5-2" target="_blank" class="btn">查看项目 →</a>
+                    </div>
+                </div>
+                <div class="searchable" style="padding: 2rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b;">
+                                4.
+                                <a href="https://github.com/user3/awesome-ai-project-5-3" target="_blank" style="color: #2563eb; text-decoration: none;">
+                                    awesome-ai-project-5-3
+                                </a>
+                            </h3>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.25rem; color: #f59e0b;">
+                                    <span>⭐</span>
+                                    <span style="font-weight: 600;">1300</span>
+                                    <span style="color: #059669;">(+16)</span>
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>💻</span> Go
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>👨‍💻</span> developer3
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>📅</span> 2025-09-12 13:23:46
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1.5rem; background: linear-gradient(135deg, #e0f2fe 0%, #e1f5fe 100%); border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0284c7;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <span style="font-size: 1.25rem;">🤖</span>
+                            <span style="font-weight: 700; color: #0c4a6e;">AI技术洞察</span>
+                        </div>
+                        <p style="color: #0c4a6e; line-height: 1.7; font-size: 1rem;">这是一个专注于Go的AI项目，提供了创新的机器学习解决方案，特别适合研究人员使用。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📝 项目简介</h4>
+                        <p style="color: #4b5563; line-height: 1.6;">这是第5天的第3个AI项目，专注于机器学习和深度学习技术创新。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📖 README内容</h4>
+                        <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid #cbd5e1;">
+                            <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6; color: #374151; margin: 0;"># AI项目5-3
+
+这是一个创新的AI项目，使用最新的机器学习技术。
+
+## 特性
+
+- 🤖 智能算法
+- 📊 数据分析
+- 🚀 高性能
+- 📱 用户友好
+
+## 快速开始
+
+```bash
+pip install awesome-ai-project-5-3
+```
+
+这个项目旨在解决现实世界的AI问题，提供简单易用的API接口。</pre>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.875rem; color: #94a3b8;">
+                            <span>📊 数据来源: GitHub Trending Web</span>
+                            <span> | 🌐 平台: GitHub</span>
+                        </div>
+                        <a href="https://github.com/user3/awesome-ai-project-5-3" target="_blank" class="btn">查看项目 →</a>
+                    </div>
+                </div>
+                <div class="searchable" style="padding: 2rem; margin-bottom: 2rem; border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1.5rem;">
+                        <div style="flex: 1;">
+                            <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; color: #1e293b;">
+                                5.
+                                <a href="https://github.com/user4/awesome-ai-project-5-4" target="_blank" style="color: #2563eb; text-decoration: none;">
+                                    awesome-ai-project-5-4
+                                </a>
+                            </h3>
+
+                            <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                                <div style="display: flex; align-items: center; gap: 0.25rem; color: #f59e0b;">
+                                    <span>⭐</span>
+                                    <span style="font-weight: 600;">1400</span>
+                                    <span style="color: #059669;">(+18)</span>
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>💻</span> Rust
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>👨‍💻</span> developer4
+                                </div>
+                                <div style="color: #64748b;">
+                                    <span>📅</span> 2025-09-12 13:23:46
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="padding: 1.5rem; background: linear-gradient(135deg, #e0f2fe 0%, #e1f5fe 100%); border-radius: 8px; margin-bottom: 1.5rem; border-left: 4px solid #0284c7;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+                            <span style="font-size: 1.25rem;">🤖</span>
+                            <span style="font-weight: 700; color: #0c4a6e;">AI技术洞察</span>
+                        </div>
+                        <p style="color: #0c4a6e; line-height: 1.7; font-size: 1rem;">这是一个专注于Rust的AI项目，提供了创新的机器学习解决方案，特别适合开发者使用。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📝 项目简介</h4>
+                        <p style="color: #4b5563; line-height: 1.6;">这是第5天的第4个AI项目，专注于机器学习和深度学习技术创新。</p>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <h4 style="font-weight: 600; margin-bottom: 0.75rem; color: #374151;">📖 README内容</h4>
+                        <div style="padding: 1.5rem; background: #f8fafc; border-radius: 8px; border-left: 4px solid #cbd5e1;">
+                            <pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 0.875rem; line-height: 1.6; color: #374151; margin: 0;"># AI项目5-4
+
+这是一个创新的AI项目，使用最新的机器学习技术。
+
+## 特性
+
+- 🤖 智能算法
+- 📊 数据分析
+- 🚀 高性能
+- 📱 用户友好
+
+## 快速开始
+
+```bash
+pip install awesome-ai-project-5-4
+```
+
+这个项目旨在解决现实世界的AI问题，提供简单易用的API接口。</pre>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+                        <div style="font-size: 0.875rem; color: #94a3b8;">
+                            <span>📊 数据来源: GitHub Trending Web</span>
+                            <span> | 🌐 平台: GitHub</span>
+                        </div>
+                        <a href="https://github.com/user4/awesome-ai-project-5-4" target="_blank" class="btn">查看项目 →</a>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+<div class="analysis-section mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">📊 GitHub Trending数据分析</h2>
+        </div>
+        <div class="card-body">
+            <div class="grid grid-2">
+                <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">📈 统计概览</h3>
+                    <div class="grid" style="grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: #fef3c7; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #d97706;">5</div>
+                            <div style="color: #92400e;">分析项目</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #dcfce7; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #059669;">4</div>
+                            <div style="color: #047857;">技术趋势</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #ddd6fe; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #7c3aed;">70</div>
+                            <div style="color: #6d28d9;">今日新增Stars</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #fecaca; border-radius: 8px;">
+                            <div style="font-size: 1.5rem; font-weight: 700; color: #dc2626;">5</div>
+                            <div style="color: #b91c1c;">编程语言</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">💻 编程语言分布</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                        <span class="tag" style="font-size: 0.875rem;">Python (1)</span>
+                        <span class="tag" style="font-size: 0.875rem;">JavaScript (1)</span>
+                        <span class="tag" style="font-size: 0.875rem;">TypeScript (1)</span>
+                        <span class="tag" style="font-size: 0.875rem;">Go (1)</span>
+                        <span class="tag" style="font-size: 0.875rem;">Rust (1)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #f1f5f9; border-radius: 8px;">
+                <h3 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">📋 分析报告信息</h3>
+                <div class="grid grid-2" style="font-size: 0.875rem; color: #64748b;">
+                    <div>
+                        <p><strong>数据来源:</strong> GitHub Trending (Daily)</p>
+                        <p><strong>执行时间:</strong> 2025-09-12 13:23:46</p>
+                        <p><strong>AI分析引擎:</strong> Google Gemini 2.5 Pro</p>
+                    </div>
+                    <div>
+                        <p><strong>分析深度:</strong> 项目描述 + README内容</p>
+                        <p><strong>调度方式:</strong> 定时任务 (每日8:30)</p>
+                        <p><strong>报告格式:</strong> HTML静态页面</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 每日AI技术趋势分析 | 基于GitHub Trending数据 | 由Gemini AI驱动</p>
+            <p class="text-sm mt-4">
+                数据来源: GitHub Trending | 分析引擎: Google Gemini 2.5 Pro | 更新频率: 每日8:30
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 简单的搜索功能
+        function initSearch() {
+            const searchBox = document.getElementById('search');
+            if (searchBox) {
+                searchBox.addEventListener('input', function(e) {
+                    const query = e.target.value.toLowerCase();
+                    const items = document.querySelectorAll('.searchable');
+
+                    items.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        if (text.includes(query) || query === '') {
+                            item.style.display = 'block';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+
+        // 懒加载图片
+        function initLazyLoad() {
+            const images = document.querySelectorAll('img[data-src]');
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            imageObserver.unobserve(img);
+                        }
+                    });
+                });
+
+                images.forEach(img => imageObserver.observe(img));
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initSearch();
+            initLazyLoad();
+        });
+    </script>
+</body>
+</html>

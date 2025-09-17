@@ -9,7 +9,10 @@ from pytz import timezone
 from loguru import logger
 from .crawlers.github_trending_web import GitHubTrendingWebCrawler
 from .ai_processor import AIProcessor
+from .github_uploader import GitHubUploader
+from .static_site_generator import StaticSiteGenerator
 import os
+import json
 
 
 class DailyAIScheduler:
@@ -33,6 +36,9 @@ class DailyAIScheduler:
             job_defaults=job_defaults,
             timezone=self.shanghai_tz
         )
+
+        # 初始化静态网站生成器
+        self.site_generator = StaticSiteGenerator()
 
         logger.info("定时调度器初始化完成，时区：上海")
 
@@ -183,6 +189,50 @@ class DailyAIScheduler:
             with open(filepath, 'w', encoding='utf-8') as f:
                 f.write(markdown_content)
 
+            # 步骤4: 保存数据到JSON文件（用于静态网站）
+            logger.info("💾 保存数据到本地存储")
+            report_data = {
+                "date": now.strftime("%Y-%m-%d"),
+                "generation_time": now.strftime("%Y-%m-%d %H:%M:%S"),
+                "summary": summary_result.get('summary', ''),
+                "trends": summary_result.get('trends', []),
+                "project_summaries": summary_result.get('project_summaries', []),
+                "projects": deduplicated_data
+            }
+
+            # 保存当前报告数据
+            json_filepath = filepath.replace('.md', '.json')
+            with open(json_filepath, 'w', encoding='utf-8') as f:
+                json.dump(report_data, f, ensure_ascii=False, indent=2)
+
+            # 步骤5: 生成静态网站
+            logger.info("🌐 生成静态网站")
+            try:
+                # 加载历史数据
+                historical_data = self._load_historical_reports()
+                historical_data.append(report_data)
+
+                # 生成静态网站
+                site_success = self.site_generator.generate_site(historical_data, summary_result)
+                if site_success:
+                    site_size = self.site_generator.get_output_size()
+                    logger.info(f"✅ 静态网站生成成功，大小: {site_size}")
+                else:
+                    raise RuntimeError("静态网站生成失败")
+            except Exception as e:
+                logger.error(f"静态网站生成失败: {e}")
+                raise RuntimeError(f"静态网站生成失败，用户无法访问最新内容: {e}") from e
+
+            # 步骤6: 上传到GitHub（保留作为备份）
+            github_url = None
+            try:
+                logger.info("📤 上传报告到GitHub")
+                github_uploader = GitHubUploader()
+                github_url = await github_uploader.upload_daily_report(markdown_content, filepath)
+                logger.info(f"🌐 GitHub备份成功: {github_url}")
+            except Exception as e:
+                logger.warning(f"GitHub备份失败（非致命错误）: {e}")
+
             # 输出执行结果
             trends_count = len(summary_result.get('trends', []))
             logger.info("🎉 每日AI技术分析完成！")
@@ -192,12 +242,60 @@ class DailyAIScheduler:
             logger.info(f"   - 报告目录: {date_dir}")
             logger.info(f"   - 报告文件: {filename}")
             logger.info(f"   - 文件大小: {len(markdown_content):,} 字符")
+            logger.info(f"   - 静态网站大小: {self.site_generator.get_output_size()}")
+            if github_url:
+                logger.info(f"   - GitHub备份: {github_url}")
 
             return True
 
         except Exception as e:
             logger.error(f"❌ 每日分析任务执行失败: {e}")
             return False
+
+    def _load_historical_reports(self) -> list:
+        """加载历史报告数据"""
+        historical_data = []
+        data_dir = os.path.join("data")
+
+        if not os.path.exists(data_dir):
+            return historical_data
+
+        try:
+            # 遍历年/月/日目录结构
+            for year_dir in os.listdir(data_dir):
+                year_path = os.path.join(data_dir, year_dir)
+                if not os.path.isdir(year_path):
+                    continue
+
+                for month_dir in os.listdir(year_path):
+                    month_path = os.path.join(year_path, month_dir)
+                    if not os.path.isdir(month_path):
+                        continue
+
+                    for day_dir in os.listdir(month_path):
+                        day_path = os.path.join(month_path, day_dir)
+                        if not os.path.isdir(day_path):
+                            continue
+
+                        # 查找JSON文件
+                        for file in os.listdir(day_path):
+                            if file.endswith('.json'):
+                                json_path = os.path.join(day_path, file)
+                                try:
+                                    with open(json_path, 'r', encoding='utf-8') as f:
+                                        report_data = json.load(f)
+                                        historical_data.append(report_data)
+                                except Exception as e:
+                                    logger.warning(f"加载历史报告失败 {json_path}: {e}")
+
+            # 按日期排序
+            historical_data.sort(key=lambda x: x.get('date', ''), reverse=True)
+            logger.info(f"加载了 {len(historical_data)} 份历史报告")
+
+        except Exception as e:
+            logger.error(f"加载历史报告失败: {e}")
+
+        return historical_data
 
     def add_daily_job(self):
         """添加每日8:30的定时任务"""
