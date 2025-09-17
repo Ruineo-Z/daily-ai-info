@@ -1,3 +1,7 @@
+# 版本控制
+.git/
+.gitignore
+
 # Python
 __pycache__/
 *.py[cod]
@@ -6,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -22,7 +25,7 @@ share/python-wheels/
 .installed.cfg
 *.egg
 
-# Virtual Environment
+# 虚拟环境
 .venv/
 venv/
 ENV/
@@ -33,27 +36,34 @@ env/
 .idea/
 *.swp
 *.swo
+.claude/
 
-# Environment Variables
+# 环境变量
 .env
+.env.*
 
-# Logs
+# 日志和数据
 logs/
 *.log
-
-# Data
 data/
-*.csv
-*.json
+dist/
+
+# Docker相关
+Dockerfile
+docker-compose.yml
+.dockerignore
+docker-build.sh
+docker-run.sh
+
+# 文档
 *.md
+README.md
+DOCKER.md
+CLAUDE.md
+
+# 部署脚本
+deploy/
 
 # OS
 .DS_Store
 Thumbs.db
-
-# uv
-.uv/
-
-# Docker
-.env.docker.local
-docker-compose.override.yml

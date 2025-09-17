@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  daily-ai-info:
+    image: daily-ai-info:${VERSION:-latest}
+    container_name: daily-ai-info
+    restart: unless-stopped
+
+    # 资源限制 - 针对2核2G服务器
+    deploy:
+      resources:
+        limits:
+          cpus: '1.5'      # 限制使用1.5个CPU核心
+          memory: 1.5G     # 限制内存使用1.5GB
+        reservations:
+          cpus: '0.5'      # 预留0.5个CPU核心
+          memory: 512M     # 预留512MB内存
+
+    # 环境变量文件
+    env_file:
+      - .env
+
+    # 固定环境变量
+    environment:
+      - TZ=Asia/Shanghai
+
+    # 数据卷挂载
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./dist:/app/dist
+
+    # 端口映射（可选，用于访问生成的静态网站）
+    ports:
+      - "${WEB_PORT:-8000}:8000"
+
+    # 健康检查
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+    # 网络配置
+    networks:
+      - daily-ai-network
+
+  # Nginx服务（可选）- 用于服务静态网站
+  nginx:
+    image: nginx:alpine
+    container_name: daily-ai-nginx
+    restart: unless-stopped
+    depends_on:
+      - daily-ai-info
+
+    ports:
+      - "${NGINX_PORT:-80}:80"
+
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+
+    networks:
+      - daily-ai-network
+
+    # 资源限制
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+networks:
+  daily-ai-network:
+    driver: bridge
+
+volumes:
+  data:
+  logs:
+  dist:
